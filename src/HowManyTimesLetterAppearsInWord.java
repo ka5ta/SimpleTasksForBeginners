@@ -11,6 +11,9 @@ public class HowManyTimesLetterAppearsInWord {
     StringBuilder text = new StringBuilder();
 
         for (int i = 0; i <c.length ; i++) {
+            if(!isFirstOccurrence(c, i)){
+                continue;
+            }
             StringBuilder sequence = new StringBuilder();
             for (int j = 0; j <c.length ; j++) {
                 boolean isOnCheckedPosition=false;
@@ -29,5 +32,14 @@ public class HowManyTimesLetterAppearsInWord {
             count = 0;
         }
         System.out.println(text);
+    }
+
+    private static boolean isFirstOccurrence(char[] words, int index) {
+        for (int i = 0; i <index ; i++) {
+            if(words[i]==words[index]){
+                return false;
+            }
+        }
+        return true;
     }
 }
