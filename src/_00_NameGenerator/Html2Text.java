@@ -3,22 +3,22 @@ import java.io.*;
 import javax.swing.text.html.*;
 import javax.swing.text.html.parser.*;
 
-public class Html2Text extends HTMLEditorKit.ParserCallback {
+/**
+ * Reads HTML
+ */
+public class Html2Text  {
 
-        private StringBuffer s;
-
-        public void parse(Reader input) throws IOException {
-            s = new StringBuffer();
+        public static String parse(Reader input) throws IOException {
+            StringBuffer s = new StringBuffer();
             ParserDelegator delegator = new ParserDelegator();
             // the third parameter is TRUE to ignore charset directive
-            delegator.parse(input, this, Boolean.TRUE);
-        }
+            //analyze input text and removes html part
+            delegator.parse(input, new HTMLEditorKit.ParserCallback(){
+                public void handleText(char[] text, int pos) {
+                    s.append(text);
+                }
+            }, Boolean.TRUE);
 
-        public void handleText(char[] text, int pos) {
-            s.append(text);
-        }
-
-        public String getText() {
             return s.toString();
         }
     }

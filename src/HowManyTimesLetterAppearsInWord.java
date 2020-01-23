@@ -11,7 +11,8 @@ public class HowManyTimesLetterAppearsInWord {
         String str = "KATARZYNA";
         char[] c = str.toCharArray();
         int count = 0;
-        
+
+
         StringBuilder text = new StringBuilder();
 
         for (int i = 0; i < c.length; i++) {
