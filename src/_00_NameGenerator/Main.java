@@ -26,25 +26,27 @@ public class Main {
         Map<String,Integer> statistics = new HashMap<>();
 
         for (int i = 0; i <text.length()-1 ; i++) {
-            String checkedLetters;
-            if (text.charAt(i) == ' ') {
-                continue;
-            }
-            char nextLetter = text.charAt(i + 1);
+
             char currentLetter = text.charAt(i);
-            if (nextLetter != ' ') {
-                checkedLetters = Character.toString(currentLetter) + nextLetter;
-                if (statistics.containsKey(checkedLetters)) {
-                    int occurrence = statistics.get(checkedLetters);
-                    statistics.replace(checkedLetters, occurrence + 1);
-                } else {
-                    statistics.put(checkedLetters, 1);
-                }
-            }
+            char nextLetter = text.charAt(i + 1);
+
+            if (currentLetter == ' ' || nextLetter == ' ') { continue; }
+
+            String checkedLetters = Character.toString(currentLetter) + nextLetter;
+
+            int num = statistics.getOrDefault(checkedLetters,0);
+            statistics.put(checkedLetters,num+1);
+
+            /*if (statistics.containsKey(checkedLetters)) {
+                int occurrence = statistics.get(checkedLetters);
+                statistics.replace(checkedLetters, occurrence + 1);
+            } else {
+                statistics.put(checkedLetters, 1);
+            }*/
         }
 
-        statistics.entrySet().forEach(entry -> System.out.printf("Letters: %s, Count: %d\n",entry.getKey(),entry.getValue()));
-
+        statistics.entrySet().forEach(entry ->
+                System.out.printf("Letters: %s, Count: %d\n",entry.getKey(),entry.getValue()));
 
     }
 
