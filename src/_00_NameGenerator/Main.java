@@ -4,19 +4,26 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Main {
     static Random rd = new Random();
 
+    /**
+     * #letterPairOccurrence - counts the number of times each unique letter pair appeared
+     * @param text -  converted from HTML to simple text
+     * @return - statistics amount
+     */
     public static Map<String, Integer> letterPairOccurrence(String text) {
 
         //Create Map with key and the value of it occurrence
         Map<String,Integer> statistics = new HashMap<>();
+        String textLower = text.toLowerCase();
 
         for (int i = 0; i <text.length()-1 ; i++) {
 
-            char currentLetter = text.charAt(i);
-            char nextLetter = text.charAt(i + 1);
+            char currentLetter = textLower.charAt(i);
+            char nextLetter = textLower.charAt(i + 1);
 
             if (currentLetter == ' ' || nextLetter == ' ') { continue; }
 
@@ -35,54 +42,77 @@ public class Main {
         return statistics;
     }
 
-    public static String getRandomKey(Map<String,Integer> statistics)  {
+    /**
+     * #getNextLetter -
+     * @param statistics
+     * @param previousLetter
+     * @return
+     */
+    public static String getNextLetter(Map<String,Integer> statistics, Character previousLetter)  {
 
+        //filtering only pairs that start with specific letter
+
+        if (previousLetter != null) {
+            statistics = statistics.entrySet().stream()
+                    .filter(one -> one.getKey().charAt(0) == previousLetter)
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        }
 
         /*List<String> keys = new ArrayList<String>(statistics.keySet());
         int randomLettersIndex = rd.nextInt(keys.size());
         String randomLetters = keys.get(randomLettersIndex);*/
 
-        //This function will return sum of values form hashmap
-        List<Integer> valuesList = new ArrayList<>(statistics.values());
-        int sumOfValues = valuesList.stream()
+        //This function will return sum of occurrence count from list
+        int sumOfValues = statistics.values().stream()
                 .mapToInt(value->value)
                 .sum();
 
-        //Generate random index form the sum of all keys
+        //Generate random index from the sum of all keys
         int randomIndex = rd.nextInt(sumOfValues) + 1;
 
         //Get the key that corresponds to the randomIndex where the probability increase with number of occurrences.
         int sumIndex = 0;
-        for (Map.Entry<String,Integer> key : statistics.entrySet()) {
-            sumIndex += key.getValue();
-            if(sumIndex>randomIndex){
-                return key.getKey();
+        for (Map.Entry<String,Integer> entry : statistics.entrySet()) {
+            sumIndex += entry.getValue();
+            if(sumIndex>=randomIndex){
+                return Character.toString(entry.getKey().charAt(1));
             }
         }
         throw new RuntimeException("Something wrong with key value - might be null");
     }
 
-    public static void getRandomNames(Map<String, Integer> statistics, int howManyNamesReturn){
-    //todo probably last method that will generate randomly length for names
-        int nameLength = rd.nextInt(8)+1;
-        getRandomKey(statistics);
+
+
+    public static String getRandomName(Map<String, Integer> statistics)  {
+        //todo complete getNextLetter method within this code to take as a second argument previous letter
+        StringBuilder nickname = new StringBuilder();
+
+        //Randomly picked length of nickname 3 to 8 letters long
+        int nameLength = rd.nextInt((8-3) + 1)+3;
+
+        for (int i = 0; i < nameLength; i++) {
+            nickname.append(getNextLetter(statistics,nickname.charAt(i-1)));
+            if (name.length() >= nameLength) {
+                return name.toString();
+            }
+        }
+
+        throw new RuntimeException("There is no name to display");
     }
 
     public static void main(String[] args) throws IOException {
-
         URL url = new URL("https://www.gutenberg.org/files/47/47-h/47-h.htm");
 
         //--I got text from URL without HTML components--//
         String text = Html2Text.parse(new InputStreamReader(url.openStream()));
 
         //--Remove special characters, numbers and punctuation--//
-        text=text.replaceAll("[^a-zA-Z\\s+]", "");
+        text=text.replaceAll("[^a-zA-Z\\s+]|\n", " ");
 
         Map<String, Integer> statistics = letterPairOccurrence(text);
-        getRandomNames(statistics,5);
+        System.out.println(getRandomName(statistics));
 
-        /*statistics.entrySet().forEach(entry ->
-                System.out.printf("Letters: %s, Count: %d\n",entry.getKey(),entry.getValue()));*/
+
 
 
 
