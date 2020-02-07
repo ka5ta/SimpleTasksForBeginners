@@ -43,10 +43,10 @@ public class Main {
     }
 
     /**
-     * #getNextLetter -
-     * @param statistics
-     * @param previousLetter
-     * @return
+     * #getNextLetter - gives next letter based on what was the previous letter (weighted random choice)
+     * @param statistics letter pairs with occurrence frequency
+     * @param previousLetter can be null to pick first letter
+     * @return next letter to add to create nickname
      */
     public static String getNextLetter(Map<String,Integer> statistics, Character previousLetter)  {
 
@@ -81,23 +81,26 @@ public class Main {
         throw new RuntimeException("Something wrong with key value - might be null");
     }
 
-
-
+    /**
+     * #getRandomName builds nickname
+     * @param statistics
+     * @return generated nickname string
+     */
     public static String getRandomName(Map<String, Integer> statistics)  {
-        //todo complete getNextLetter method within this code to take as a second argument previous letter
         StringBuilder nickname = new StringBuilder();
 
         //Randomly picked length of nickname 3 to 8 letters long
         int nameLength = rd.nextInt((8-3) + 1)+3;
 
-        for (int i = 0; i < nameLength; i++) {
-            nickname.append(getNextLetter(statistics,nickname.charAt(i-1)));
-            if (name.length() >= nameLength) {
-                return name.toString();
-            }
-        }
+        // while nickname is too short
+        do {
+            Character previousLetter = nickname.length() > 0 ? nickname.charAt(nickname.length() - 1) :null;
+            nickname.append(getNextLetter(statistics, previousLetter));
+        }while(nickname.length()<nameLength);
 
-        throw new RuntimeException("There is no name to display");
+        return nickname.toString();
+
+        //throw new RuntimeException("There is no name to display");
     }
 
     public static void main(String[] args) throws IOException {
@@ -111,14 +114,5 @@ public class Main {
 
         Map<String, Integer> statistics = letterPairOccurrence(text);
         System.out.println(getRandomName(statistics));
-
-
-
-
-
-
     }
-
-
-
 }
